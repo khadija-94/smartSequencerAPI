@@ -1,0 +1,22 @@
+{
+  "name": "smartIncAPI",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "Khadija M. Al-Khashab",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.13.3",
+    "mongoose-findorcreate": "^3.0.0",
+    "mongoose-validator": "^2.1.0",
+    "nodemon": "^2.0.12"
+  }
+}
