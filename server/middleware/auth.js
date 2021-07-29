@@ -1,47 +1,37 @@
-const crypto = require('crypto');
-const errorHandler = require('../lib/errorHandler');
 const User = require('../models/user');
-
-const genKey = () => {
-    var rand = new Buffer.alloc(32, 'base64'); // multiple of 3 for base64
-    this.sequenceNumber = (this.sequenceNumber + 1) | 0;
-
-    rand.writeInt32BE(this.sequenceNumber, 28);
-
-    crypto.randomBytes(29).copy(rand);
-
-    return rand.toString('base64').replace(/\//g, '_').replace(/\+/g, '-');
-};
 
 const registerUser = (req , res) => {
     let user = new User ({
         email: req.body.email,
         password: req.body.password,
-        api_key: genKey(),
-        pointer: req.body.current,
+        pointer: req.body.pointer,
     });
     return user;
 };
 
-const validateKey = (req, res, next) => {
-    let api_key = req.get('Authorization');
-    User.find({}, function(err, users) {
 
-        if (err){
+// FORMAT OF TOKEN
+// Authorization: Bearer <access_token>
 
-            return errorHandler(err, req, res)
-        }
-        else {
-            users.forEach(function(user) {
-                
-                if (User.verifyApiKey(api_key, user.api_key)){
-                    req.body.user = user;
-                }
-            })
-            if (!req.body.user) { errorHandler("Access denied", req, res)}
-            next()
-        }
-    });
-};
+// Verify Token
+const verifyToken = (req, res, next) => {
+    // Get auth header value
+    const authHeader = req.headers['authorization'];
+    // Check if bearer is undefined
+    if(typeof authHeader !== 'undefined') {
+      // Split at the space
+      const bearer = authHeader.split(' ');
+      // Get token from array
+      const bearerToken = bearer[1];
+      // Set the token
+      req.token = bearerToken;
+      // Next middleware
+      next();
+    } else {
+      // Forbidden
+      res.json({ "error": "Something went wrong"});
+    }
+ 
+}
 
-module.exports = { registerUser, validateKey };
+module.exports = { registerUser, verifyToken };
